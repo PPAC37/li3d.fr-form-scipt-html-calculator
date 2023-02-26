@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Calibrage de l’extrudeur - Calcul des pas par mm (Steps/mm)</title>
+    </head>
+    <body>
+
+        <h1>Calibrage de l’extrudeur - Calcul des pas par mm (Steps/mm)</h1>
+
+        Pour plus d'informations : <a href="https://www.lesimprimantes3d.fr/forum/topic/34123-tuto-conseils-quelques-r%C3%A9glages-%C3%A0-r%C3%A9aliser-avant-de-se-lancer/" target="_blank">[TUTO / Conseils] Quelques réglages à réaliser avant de se lancer - par fran6p www.lesimprimantes3d.fr</a>
+
+  
+        <pre><code>
+M302 P1      ; disable cold extrusion checking
+M82          ; Mettre l'extrusion en mode relatif pour pouvoir executer la commande suivante plusieur fois.
+<span id="outputgcodeG1">G1 E100 F120 ; extruder 100mm a une vitesse de 120mm/min soit 2mm/s.</span>
+
+</code></pre>
+
+        <script>
+            /* When the inputs field receives input, refresh the result ... */
+            function refrechNewEstepByMM() {
+            // TODO warn ou debug erreur valeur "" ou "0" ou "80." -> Infinity
+            // TODO pas de valeur négatives ...
+            document.getElementById("outputEStepByMM").innerHTML = document.getElementById("inputCurentEStepsByMM").value * document.getElementById("lDemande").value / document.getElementById("lReel").value;
+            // Bonus ...
+            // var a revoir cf pb si un '.' au ieu d'une ',' ...
+            var tmpCal = document.getElementById("inputCurentEStepsByMM").value * document.getElementById("lDemande").value / document.getElementById("lReel").value;
+            document.getElementById("outputgcodeM92").innerHTML = ";M92 E"+tmpCal+"\n"+"M92 E"+tmpCal.toFixed(2);
+            //
+            document.getElementById("outputgcodeG1").innerHTML = "G1 E"+document.getElementById("lDemande").value+" F120 ; Extruder "+document.getElementById("lDemande").value+" mm  a une vitesse de 120mm/min soit 2mm/s." 
+            }
+        </script>
+
+        <form action="refrechNewEstepByMM()" autocomplete="on">
+            <div class="wrap-input">
+                <label>Valeur actuelle des pas par mm</label>
+                <input id="inputCurentEStepsByMM" type="number" placeholder="EStep/mm actuel"  value="95.0" min="0" max="100000"
+                       oninput="refrechNewEstepByMM()" onchange="refrechNewEstepByMM()">
+                <span class="info">(Step/mm)</span>
+            </div>
+            <div class="wrap-input">
+                <label>longueur demandée </label>
+                <input id="lDemande" type="number" placeholder="demandée (mm)" value="100.0" min="10" max="400"
+                       oninput="refrechNewEstepByMM()" onchange="refrechNewEstepByMM()">
+                <span class="info">(mm)</span>
+            </div>
+            <div class="wrap-input">
+                <label>longueur réél moyenne mesurée</label>
+                <input id="lReel" type="number" placeholder="mm" min="0" max="5000"
+                       oninput="refrechNewEstepByMM()" onchange="refrechNewEstepByMM()">
+                <span class="info">(mm)</span>
+            </div>
+        </form>
+
+        <p>Nouveau pas (Step/mm) = <span id="outputEStepByMM"></span></p>
+
+        M92 - Set Axis Steps-per-unit https://marlinfw.org/docs/gcode/M092.html
+
+        <pre><code>; Steps/mm Extrudeur 
+<span id="outputgcodeM92">;M92 Exx.xx</span>
+
+; Pour sauver dans l'eeprom (seulement si depuis pronterface ou autre mais pas dans le gcode démmarrage)
+M500
+</code></pre>
+
+        <details><summary>Documentation de référence</summary>
+
+            <ul>
+                <li><a href="https://reprap.org/wiki/Calibration/fr" target="_blank">https://reprap.org/wiki/Calibration/fr</a></li>
+                <li><a href="https://reprap.org/wiki/Triffid_Hunter%27s_Calibration_Guide" target="_blank">https://reprap.org/wiki/Triffid_Hunter%27s_Calibration_Guide</a></li>
+                <li><a href="https://marlinfw.org/" target="_blank">https://marlinfw.org/</a></li>
+                <li><a href="https://marlinfw.org/docs/configuration/configuration.html" target="_blank">https://marlinfw.org/docs/configuration/configuration.html</a></li>
+                <li><a href="https://marlinfw.org/meta/gcode/" target="_blank">https://marlinfw.org/meta/gcode/</a></li>
+                <!-- 
+                <li><a href="" target="_blank"></a></li>
+                -->            
+            </ul>
+
+        </details>
+    </body>
+</html>
